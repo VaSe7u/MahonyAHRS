@@ -225,3 +225,24 @@ float Mahony::_invSqrt(float x) {
   return y;
 }
 
+void Mahony::_toYawPitchRoll(float &yaw, float &pitch, float &roll) {
+  // Quaternion to Euler
+  // pitch (y-axis rotation)
+  float sinp = +2.0 * (_quaternion[0] * _quaternion[2] - _quaternion[3] * _quaternion[1]);
+  if (fabs(sinp) >= 1) {
+    pitch = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+  } else {
+    pitch = asin(sinp);
+  }
+
+  // roll (x-axis rotation)
+  float sinr = +2.0 * (_quaternion[0] * _quaternion[1] + _quaternion[2] * _quaternion[3]);
+  float cosr = +1.0 - 2.0 * (_quaternion[1] * _quaternion[1] + _quaternion[2] * _quaternion[2]);
+  roll = atan2(sinr, cosr);
+
+  // yaw (z-axis rotation)
+  float siny = +2.0 * (_quaternion[0] * _quaternion[3] + _quaternion[1] * _quaternion[2]);
+  float cosy = +1.0 - 2.0 * (_quaternion[2] * _quaternion[2] + _quaternion[3] * _quaternion[3]);
+  yaw = atan2(siny, cosy);
+  yaw += M_PI;
+}
