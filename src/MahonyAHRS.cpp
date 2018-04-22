@@ -30,10 +30,6 @@ void Mahony::setI(float i) {
   _twoKi = 2.0f * i;
 }
 
-	// Convert gyroscope degrees/sec to radians/sec
-	gx *= 0.0174533f;
-	gy *= 0.0174533f;
-	gz *= 0.0174533f;
 void update(float &yaw, float &pitch, float &roll,
             float ax, float ay, float az,
             float gx, float gy, float gz,
@@ -144,10 +140,6 @@ void update(float &yaw, float &pitch, float &roll,
   _toYawPitchRoll(yaw, pitch, roll);
 }
 
-	// Convert gyroscope degrees/sec to radians/sec
-	gx *= 0.0174533f;
-	gy *= 0.0174533f;
-	gz *= 0.0174533f;
 void update(float &yaw, float &pitch, float &roll,
             float ax, float ay, float az,
             float gx, float gy, float gz) {
