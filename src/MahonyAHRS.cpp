@@ -9,34 +9,17 @@
 // provided under the GNU General Public Licence unless an alternative licence
 // is provided in source."
 //
-// Date			Author			Notes
-// 29/09/2011	SOH Madgwick    Initial release
-// 02/10/2011	SOH Madgwick	Optimised for reduced CPU load
+// Date     Author      Notes
+// 29/09/2011 SOH Madgwick    Initial release
+// 02/10/2011 SOH Madgwick    Optimised for reduced CPU load
 //
 // Algorithm paper:
 // http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=4608934&url=http%3A%2F%2Fieeexplore.ieee.org%2Fstamp%2Fstamp.jsp%3Ftp%3D%26arnumber%3D4608934
 //
 //=============================================================================================
-
-//-------------------------------------------------------------------------------------------
-// Header files
-
 #include "MahonyAHRS.h"
-#include <math.h>
-
-//-------------------------------------------------------------------------------------------
-// Definitions
-
-#define DEFAULT_SAMPLE_FREQ	512.0f	// sample frequency in Hz
-#define twoKpDef	(2.0f * 0.5f)	// 2 * proportional gain
-#define twoKiDef	(2.0f * 0.0f)	// 2 * integral gain
 
 
-//============================================================================================
-// Functions
-
-//-------------------------------------------------------------------------------------------
-// AHRS algorithm update
 
 Mahony::Mahony()
 {
@@ -268,7 +251,3 @@ void Mahony::computeAngles()
 	anglesComputed = 1;
 }
 
-
-//============================================================================================
-// END OF CODE
-//============================================================================================
