@@ -1,21 +1,22 @@
-#######################################
+########################################
+# Syntax Coloring Map For MahonyAHRS
+########################################
+
+########################################
 # Datatypes (KEYWORD1)
-#######################################
+########################################
+Mahony							KEYWORD1
 
-Mahony	KEYWORD1
-
-#######################################
+########################################
 # Methods and Functions (KEYWORD2)
-#######################################
-
-update	KEYWORD2
-updateIMU	KEYWORD2
-getPitch	KEYWORD2
-getYaw	KEYWORD2
-getRoll	KEYWORD2
+########################################
+setP							KEYWORD2
+setI							KEYWORD2
+update							KEYWORD2
 
 
-#######################################
+########################################
 # Constants (LITERAL1)
-#######################################
-
+########################################
+DEFAULT_PROPORTIONAL_GAIN		LITERAL1
+DEFAULT_INTEGRAL_GAIN			LITERAL1
