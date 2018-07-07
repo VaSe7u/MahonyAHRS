@@ -26,7 +26,7 @@ SOFTWARE.
 @authors    Vasil Kalchev
 @date       2011-2018
 @version    0.9.0
-@copyright  GNU General Public License v3.0
+@copyright  The MIT License
 @brief      Mahony's sensor fusion algorithm.
 
 @todo:
@@ -48,19 +48,19 @@ public:
   @note The `samplePeriod` parameter is the time in seconds between
   calls to the `update` function/s.
   */
-  explicit Mahony(float samplePeriod);
+  explicit Mahony(const float samplePeriod);
 
   /*!
   @brief Proportional gain setter.
   @param[in] p: the proportional gain of the filter.
   */
-  void setP(float p);
+  void setP(const float p);
 
   /*!
   @brief Integral gain setter.
   @param[in] i: the integral gain of the filter.
   */
-  void setI(float i);
+  void setI(const float i);
 
   /*!
   @brief Calculates Euler angles...
@@ -132,7 +132,7 @@ private:
   @brief Inverse square root.
   @param[in] x.
   */
-  static float _invSqrt(float x);
+  static float _invSqrt(const float x);
 
   /*!
   @brief Converts quaternion to Euler angles.

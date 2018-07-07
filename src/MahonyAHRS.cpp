@@ -26,7 +26,7 @@ SOFTWARE.
 @authors    Vasil Kalchev
 @date       2011-2018
 @version    0.9.0
-@copyright  GNU General Public License v3.0
+@copyright  The MIT License
 @brief      Mahony's sensor fusion algorithm.
 
 @todo:
@@ -34,14 +34,14 @@ SOFTWARE.
 
 #include "MahonyAHRS.hpp"
 
-Mahony::Mahony(uint32_t samplePeriod)
+Mahony::Mahony(const float samplePeriod)
   : _samplePeriod(samplePeriod) {}
 
-void Mahony::setP(float p) {
+void Mahony::setP(const float p) {
   _twoKp = 2.0f * p;
 }
 
-void Mahony::setI(float i) {
+void Mahony::setI(const float i) {
   _twoKi = 2.0f * i;
 }
 
@@ -229,7 +229,7 @@ void update(float &yaw, float &pitch, float &roll,
 
 // Fast inverse square-root
 // See: http://en.wikipedia.org/wiki/Fast_inverse_square_root
-float Mahony::_invSqrt(float x) {
+float Mahony::_invSqrt(const float x) {
   float halfx = 0.5f * x;
   float y = x;
   int32_t i = *(int32_t*)&y; // not portable
