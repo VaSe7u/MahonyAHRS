@@ -1,23 +1,3 @@
-//=============================================================================================
-// MahonyAHRS.c
-//=============================================================================================
-//
-// Madgwick's implementation of Mayhony's AHRS algorithm.
-// See: http://www.x-io.co.uk/open-source-imu-and-ahrs-algorithms/
-//
-// From the x-io website "Open-source resources available on this website are
-// provided under the GNU General Public Licence unless an alternative licence
-// is provided in source."
-//
-// Date          Author          Notes
-// 29/09/2011    SOH Madgwick    Initial release
-// 02/10/2011    SOH Madgwick    Optimised for reduced CPU load
-//
-// Algorithm paper:
-// http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=4608934&url=http%3A%2F%2Fieeexplore.ieee.org%2Fstamp%2Fstamp.jsp%3Ftp%3D%26arnumber%3D4608934
-//
-//=============================================================================================
-
 /*!
 @file       MahonyAHRS.cpp
 @authors    SOH Madgwick
