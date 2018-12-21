@@ -45,10 +45,83 @@ void Mahony::setI(const float i) {
   _twoKi = 2.0f * i;
 }
 
-void update(float &yaw, float &pitch, float &roll,
+void Mahony::update(float &yaw, float &pitch, float &roll,
+            float ax, float ay, float az,
+            float gx, float gy, float gz) {
+  float recipNorm;
+
+// Compute feedback only if accelerometer measurement valid
+// (avoids NaN in accelerometer normalisation)
+  if (!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
+
+    // Normalise accelerometer measurement
+    recipNorm = Mahony::_invSqrt(ax * ax + ay * ay + az * az);
+    ax *= recipNorm;
+    ay *= recipNorm;
+    az *= recipNorm;
+
+    // Estimated direction of gravity
+  float halfvx, halfvy, halfvz;
+    halfvx = _quaternion[1] * _quaternion[3] - _quaternion[0] * _quaternion[2];
+    halfvy = _quaternion[0] * _quaternion[1] + _quaternion[2] * _quaternion[3];
+    halfvz = _quaternion[0] * _quaternion[0] - 0.5f + _quaternion[3] * _quaternion[3];
+
+    // Error is sum of cross product between estimated
+    // and measured direction of gravity
+  float halfex, halfey, halfez;
+    halfex = (ay * halfvz - az * halfvy);
+    halfey = (az * halfvx - ax * halfvz);
+    halfez = (ax * halfvy - ay * halfvx);
+
+    // Compute and apply integral feedback if enabled
+    if (_twoKi > 0.0f) {
+      // integral error scaled by Ki
+      _integralFBx += _twoKi * halfex * _samplePeriod;
+      _integralFBy += _twoKi * halfey * _samplePeriod;
+      _integralFBz += _twoKi * halfez * _samplePeriod;
+      gx += _integralFBx;  // apply integral feedback
+      gy += _integralFBy;
+      gz += _integralFBz;
+    } else {
+      _integralFBx = 0.0f; // prevent integral windup
+      _integralFBy = 0.0f;
+      _integralFBz = 0.0f;
+    }
+
+    // Apply proportional feedback
+    gx += _twoKp * halfex;
+    gy += _twoKp * halfey;
+    gz += _twoKp * halfez;
+  }
+
+// Integrate rate of change of quaternion
+  gx *= (0.5f * _samplePeriod);   // pre-multiply common factors
+  gy *= (0.5f * _samplePeriod);
+  gz *= (0.5f * _samplePeriod);
+  float qa, qb, qc;
+  qa = _quaternion[0];
+  qb = _quaternion[1];
+  qc = _quaternion[2];
+  _quaternion[0] += (-qb * gx - qc * gy - _quaternion[3] * gz);
+  _quaternion[1] += (qa * gx + qc * gz - _quaternion[3] * gy);
+  _quaternion[2] += (qa * gy - qb * gz + _quaternion[3] * gx);
+  _quaternion[3] += (qa * gz + qb * gy - qc * gx);
+
+// Normalise quaternion
+  recipNorm = Mahony::_invSqrt(_quaternion[0] * _quaternion[0] + _quaternion[1] * _quaternion[1] + _quaternion[2] * _quaternion[2] + _quaternion[3] * _quaternion[3]);
+  _quaternion[0] *= recipNorm;
+  _quaternion[1] *= recipNorm;
+  _quaternion[2] *= recipNorm;
+  _quaternion[3] *= recipNorm;
+
+  _toYawPitchRoll(yaw, pitch, roll);
+}
+
+void Mahony::update(float &yaw, float &pitch, float &roll,
             float ax, float ay, float az,
             float gx, float gy, float gz,
             float mx, float my, float mz) {
+  float recipNorm;
 
   // Use IMU algorithm if magnetometer measurement invalid
   // (avoids NaN in magnetometer normalisation)
@@ -62,14 +135,13 @@ void update(float &yaw, float &pitch, float &roll,
   if (!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
 
     // Normalise accelerometer measurement
-  float recipNorm;
-    recipNorm = invSqrt(ax * ax + ay * ay + az * az);
+    recipNorm = Mahony::_invSqrt(ax * ax + ay * ay + az * az);
     ax *= recipNorm;
     ay *= recipNorm;
     az *= recipNorm;
 
     // Normalise magnetometer measurement
-    recipNorm = invSqrt(mx * mx + my * my + mz * mz);
+    recipNorm = Mahony::_invSqrt(mx * mx + my * my + mz * mz);
     mx *= recipNorm;
     my *= recipNorm;
     mz *= recipNorm;
@@ -126,9 +198,9 @@ void update(float &yaw, float &pitch, float &roll,
     }
 
     // Apply proportional feedback
-    gx += twoKp * halfex;
-    gy += twoKp * halfey;
-    gz += twoKp * halfez;
+    gx += _twoKp * halfex;
+    gy += _twoKp * halfey;
+    gz += _twoKp * halfez;
   }
 
   // Integrate rate of change of quaternion
@@ -145,84 +217,12 @@ void update(float &yaw, float &pitch, float &roll,
   _quaternion[3] += (qa * gz + qb * gy - qc * gx);
 
   // Normalise quaternion
-  recipNorm = _invSqrt(_quaternion[0] * _quaternion[0] + _quaternion[1] * _quaternion[1] + _quaternion[2] * _quaternion[2] + _quaternion[3] * _quaternion[3]);
+  recipNorm = Mahony::_invSqrt(_quaternion[0] * _quaternion[0] + _quaternion[1] * _quaternion[1] + _quaternion[2] * _quaternion[2] + _quaternion[3] * _quaternion[3]);
   _quaternion[0] *= recipNorm;
   _quaternion[1] *= recipNorm;
   _quaternion[2] *= recipNorm;
   _quaternion[3] *= recipNorm;
 
-
-  _toYawPitchRoll(yaw, pitch, roll);
-}
-
-void update(float &yaw, float &pitch, float &roll,
-            float ax, float ay, float az,
-            float gx, float gy, float gz) {
-
-// Compute feedback only if accelerometer measurement valid
-// (avoids NaN in accelerometer normalisation)
-  if (!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
-
-    // Normalise accelerometer measurement
-  float recipNorm;
-    recipNorm = invSqrt(ax * ax + ay * ay + az * az);
-    ax *= recipNorm;
-    ay *= recipNorm;
-    az *= recipNorm;
-
-    // Estimated direction of gravity
-  float halfvx, halfvy, halfvz;
-    halfvx = _quaternion[1] * _quaternion[3] - _quaternion[0] * _quaternion[2];
-    halfvy = _quaternion[0] * _quaternion[1] + _quaternion[2] * _quaternion[3];
-    halfvz = _quaternion[0] * _quaternion[0] - 0.5f + _quaternion[3] * _quaternion[3];
-
-    // Error is sum of cross product between estimated
-    // and measured direction of gravity
-  float halfex, halfey, halfez;
-    halfex = (ay * halfvz - az * halfvy);
-    halfey = (az * halfvx - ax * halfvz);
-    halfez = (ax * halfvy - ay * halfvx);
-
-    // Compute and apply integral feedback if enabled
-    if (_twoKi > 0.0f) {
-      // integral error scaled by Ki
-      _integralFBx += _twoKi * halfex * _samplePeriod;
-      _integralFBy += _twoKi * halfey * _samplePeriod;
-      _integralFBz += _twoKi * halfez * _samplePeriod;
-      gx += _integralFBx;  // apply integral feedback
-      gy += _integralFBy;
-      gz += _integralFBz;
-    } else {
-      _integralFBx = 0.0f; // prevent integral windup
-      _integralFBy = 0.0f;
-      _integralFBz = 0.0f;
-    }
-
-    // Apply proportional feedback
-    gx += _twoKp * halfex;
-    gy += _twoKp * halfey;
-    gz += _twoKp * halfez;
-  }
-
-// Integrate rate of change of quaternion
-  gx *= (0.5f * _samplePeriod);   // pre-multiply common factors
-  gy *= (0.5f * _samplePeriod);
-  gz *= (0.5f * _samplePeriod);
-  float qa, qb, qc;
-  qa = _quaternion[0];
-  qb = _quaternion[1];
-  qc = _quaternion[2];
-  _quaternion[0] += (-qb * gx - qc * gy - _quaternion[3] * gz);
-  _quaternion[1] += (qa * gx + qc * gz - _quaternion[3] * gy);
-  _quaternion[2] += (qa * gy - qb * gz + _quaternion[3] * gx);
-  _quaternion[3] += (qa * gz + qb * gy - qc * gx);
-
-// Normalise quaternion
-  recipNorm = _invSqrt(_quaternion[0] * _quaternion[0] + _quaternion[1] * _quaternion[1] + _quaternion[2] * _quaternion[2] + _quaternion[3] * _quaternion[3]);
-  _quaternion[0] *= recipNorm;
-  _quaternion[1] *= recipNorm;
-  _quaternion[2] *= recipNorm;
-  _quaternion[3] *= recipNorm;
 
   _toYawPitchRoll(yaw, pitch, roll);
 }
