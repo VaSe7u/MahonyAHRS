@@ -20,7 +20,7 @@
 //! YOUR_IMU your_imu(your_imu_params...);
 
 // The period between calls to Mahony's update function.
-const float mahonySamplePeriod = 0.05f;
+const float mahonySamplePeriod = 0.05f; // in seconds
 Mahony mahony(mahonySamplePeriod);
 
 void setup() {
@@ -55,13 +55,13 @@ void loop() {
   //! float gyRadS = gyRaw * your_imu_toRads;
   //! float gzRadS = gzRaw * your_imu_toRads;
 
-  /* Yaw, pitch and roll variables in radians per second the will be
-     overwritten by the algorithm. */
-  float yawRadS = 0.0f;
-  float pitchRadS = 0.0f;
-  float rollRadS = 0.0f;
+  /* Yaw, pitch and roll variables in radians the will be overwritten
+     by the algorithm. */
+  float yawRad = 0.0f;
+  float pitchRad = 0.0f;
+  float rollRad = 0.0f;
 
-  /* The Mahony algorithm must be called at fixed period specified in
+  /* The Mahony algorithm must be called at fixed period specified
      earlier in the constructor. In this case 50 milliseconds. */
   static unsigned long mahonyLMS = millis();
   if (millis() - mahonyLMS > 50) {
@@ -69,10 +69,10 @@ void loop() {
     /* The update function implements the Mahony's sensor fusion
        algorithm. The first three parameters are references to the
        yaw, pitch and roll variables, where the result will be
-       written in radians per second. The next three parameters are
-       the 3-axis accelerations. The last three parameters are the
-       3-axis angular velocities. */
-    mahony.update(&yawRadS, &pitchRadS, &rollRadS, // YPR references
+       written in radians. The next three parameters are the 3-axis
+       accelerations. The last three parameters are the 3-axis
+       angular velocities. */
+    mahony.update(&yawRad, &pitchRad, &rollRad, // YPR references
                   axRaw, ayRaw, azRaw, // x, y, z acceleration
                   gxRadS, gyRadS, gzRadS, // x, y, z angular velocity
                   mxRaw, myRaw, mzRaw); // x, y, z magnetic field
@@ -80,8 +80,8 @@ void loop() {
 
   /* Convert the result of the algorithm from radians per second to
      degrees per second. */
-  float yawDegS = yawRadS * 57.295779513f;
-  float pitchDegS = pitchRadS * 57.295779513f;
-  float rollDegS = rollRadS * 57.295779513f;
+  float yawDeg = yawRad * 57.295779513f;
+  float pitchDeg = pitchRad * 57.295779513f;
+  float rollDeg = rollRad * 57.295779513f;
 
 }
