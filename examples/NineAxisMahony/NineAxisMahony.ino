@@ -78,7 +78,7 @@ void loop() {
        written in radians. The next three parameters are the 3-axis
        accelerations. The last three parameters are the 3-axis
        angular velocities. */
-    mahony.update(&yawRad, &pitchRad, &rollRad, // YPR references
+    mahony.update(yawRad, pitchRad, rollRad, // YPR references
                   axRaw, ayRaw, azRaw, // x, y, z acceleration
                   gxRadS, gyRadS, gzRadS, // x, y, z angular velocity
                   mxRaw, myRaw, mzRaw); // x, y, z magnetic field
