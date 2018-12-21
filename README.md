@@ -34,7 +34,7 @@ void loop() {
 
   float yaw = 0.0f, pitch = 0.0f, roll = 0.0f;
   if (timeToUpdate()) {
-    mahony.update(&yaw, &pitch, &roll, // The returned Euler angles
+    mahony.update(yaw, pitch, roll, // The returned Euler angles
                   accelX, accelY, accelZ, // 3-axis acceleration
                   gyroX, gyroY, gyroZ); // 3-axis angular velocity
   }
